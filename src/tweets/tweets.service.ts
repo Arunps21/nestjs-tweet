@@ -1,26 +1,54 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Tweet } from './entities/tweet.entity';
+import { Repository } from 'typeorm';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class TweetsService {
-  create(createTweetDto: CreateTweetDto) {
-    return 'This action adds a new tweet';
+  constructor(
+    @InjectRepository(Tweet) private tweetRepository: Repository<Tweet>,
+    private readonly usersService: UsersService,
+  ) {}
+  public async create(createTweetDto: CreateTweetDto) {
+    const { user_id, content } = createTweetDto;
+    await this.usersService.findOne(user_id);
+    const tweet = this.tweetRepository.create({
+      content,
+      user_id,
+    });
+    return await this.tweetRepository.save(tweet);
   }
 
   findAll() {
-    return `This action returns all tweets`;
+    return this.tweetRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tweet`;
+  public async findOne(id: number) {
+    const tweet = await this.tweetRepository.findOne({ where: { id } });
+    if (!tweet) {
+      throw new ConflictException(`Tweet with id ${id} not found`);
+    }
+    return tweet;
   }
 
-  update(id: number, updateTweetDto: UpdateTweetDto) {
-    return `This action updates a #${id} tweet`;
+  public async update(id: number, updateTweetDto: UpdateTweetDto) {
+    const tweet = await this.findOne(id);
+    if (!tweet) {
+      throw new ConflictException(`Tweet with id ${id} not found`);
+    }
+    await this.tweetRepository.update(id, updateTweetDto);
+    return tweet;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} tweet`;
+  public async remove(id: number) {
+    const tweet = await this.findOne(id);
+    if (!tweet) {
+      throw new ConflictException(`Tweet with id ${id} not found`);
+    }
+    await this.tweetRepository.delete(id);
+    return this.findAll();
   }
 }
