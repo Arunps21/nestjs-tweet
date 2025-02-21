@@ -6,10 +6,6 @@ import { ProfilesModule } from './profiles/profiles.module';
 import { TweetsModule } from './tweets/tweets.module';
 import { LikesModule } from './likes/likes.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/entities/user.entity';
-import { Profile } from './profiles/entities/profile.entity';
-import { Tweet } from './tweets/entities/tweet.entity';
-import { Like } from './likes/entities/like.entity';
 
 @Module({
   imports: [
