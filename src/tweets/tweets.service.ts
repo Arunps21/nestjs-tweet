@@ -39,7 +39,10 @@ export class TweetsService {
     if (!tweet) {
       throw new ConflictException(`Tweet with id ${id} not found`);
     }
-    await this.tweetRepository.update(id, updateTweetDto);
+    const updateTweet = await this.tweetRepository.update(id, updateTweetDto);
+    if (!updateTweet.affected) {
+      throw new ConflictException(`Tweet with id ${id} not updated`);
+    }
     return tweet;
   }
 
