@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -37,10 +38,9 @@ export class UsersService {
     }
   }
 
-
   public async userLogin(userLoginDto: LoginUserDto) {
-    const {email, password} = userLoginDto;
-    const user = await this.usersRepository.findOne({where: { email }});
+    const { email, password } = userLoginDto;
+    const user = await this.usersRepository.findOne({ where: { email } });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -48,12 +48,18 @@ export class UsersService {
     if (!isMatch) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    return `Successfully logged in`;
+    return {
+      message: `Successfully logged In`,
+      statusCode: HttpStatus.OK,
+      user,
+    };
   }
 
-
-  findAll() {
-    return this.usersRepository.find();
+  findAll(skip: number, limit: number) {
+    return this.usersRepository.find({
+      skip,
+      take: limit,
+    });
   }
 
   public async findOne(id: number) {
@@ -79,6 +85,6 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
     await this.usersRepository.delete(id);
-    return this.findAll();
+    return this.usersRepository.find();
   }
 }

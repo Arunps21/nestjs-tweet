@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -14,13 +24,13 @@ export class UsersController {
   }
 
   @Post(`userLogin`)
-  userLogin(@Body() userLoginDto: LoginUserDto){
+  userLogin(@Body() userLoginDto: LoginUserDto) {
     return this.usersService.userLogin(userLoginDto);
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query('skip',ParseIntPipe) skip: number, @Query('limit',ParseIntPipe) limit: number) {
+    return this.usersService.findAll(skip, limit);
   }
 
   @Get(':id')
