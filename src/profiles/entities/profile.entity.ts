@@ -26,8 +26,8 @@ export class Profile {
   @Column({ type: 'text', nullable: true })
   bio: string;
 
-  @Column({ nullable: true })
-  avatar: string;
+  @Column({ type: 'varchar', nullable: true })
+  avatar: string | null;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

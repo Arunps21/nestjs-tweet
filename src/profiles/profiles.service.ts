@@ -13,7 +13,10 @@ export class ProfilesService {
     @InjectRepository(Profile) private profilesRepository: Repository<Profile>,
   ) {}
 
-  public async create(createProfileDto: CreateProfileDto) {
+  public async create(
+    createProfileDto: CreateProfileDto,
+    file: Express.Multer.File,
+  ) {
     const { user_id, avatar, bio } = createProfileDto;
     await this.userService.findOne(user_id);
     const extProfile = await this.profilesRepository.findOneBy({ user_id });
@@ -22,7 +25,7 @@ export class ProfilesService {
     }
     const profile = this.profilesRepository.create({
       user_id,
-      avatar,
+      avatar: file ? `/uploads/avatars/${file.filename}` : null,
       bio,
     });
     await this.profilesRepository.save(profile);
@@ -41,12 +44,22 @@ export class ProfilesService {
     return profile;
   }
 
-  public async update(id: number, updateProfileDto: UpdateProfileDto) {
+  public async update(
+    id: number,
+    updateProfileDto: UpdateProfileDto,
+    file?: Express.Multer.File,
+  ) {
     const profile = await this.profilesRepository.findOne({ where: { id } });
     if (!profile) {
       throw new ConflictException(`Profile with id ${id} not found`);
     }
-    await this.profilesRepository.update(id, updateProfileDto);
+
+    const updatedData = {
+      ...updateProfileDto,
+      avatar: file ? `/uploads/avatars/${file.filename}` : profile.avatar,
+    };
+
+    await this.profilesRepository.update(id, updatedData);
     return await this.profilesRepository.findOne({ where: { id } });
   }
 
