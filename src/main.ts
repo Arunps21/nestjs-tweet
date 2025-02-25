@@ -9,18 +9,17 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(
-    new ValidationPipe({ 
-      whitelist: true,           
-      forbidNonWhitelisted: true, 
-      transform: true,           
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT') || 3000; 
-
+  const port = configService.get<number>('PORT') || 3000;
   await app.listen(Number(port));
   console.log(`Server running on http://localhost:${port}`);
 }

@@ -8,22 +8,23 @@ import { LikesModule } from './likes/likes.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { typeOrmConfig } from './config/typeOrm.config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    UsersModule,
-    ProfilesModule,
-    TweetsModule,
-    LikesModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) =>
         typeOrmConfig(configService),
     }),
+    UsersModule,
+    ProfilesModule,
+    TweetsModule,
+    LikesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

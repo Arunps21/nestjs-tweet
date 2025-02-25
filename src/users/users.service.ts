@@ -12,11 +12,13 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
   public async userReg(createUserDto: CreateUserDto) {
     const saltRounds: number = 10;
@@ -48,9 +50,13 @@ export class UsersService {
     if (!isMatch) {
       throw new UnauthorizedException('Invalid credentials');
     }
+    const payload = { userId: user.id, email: user.email };
+    const token = this.jwtService.sign(payload);
+    console.log(`Token`, token);
     return {
       message: `Successfully logged In`,
       statusCode: HttpStatus.OK,
+      token,
       user,
     };
   }
