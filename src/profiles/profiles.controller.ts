@@ -8,13 +8,16 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/config/multer.config';
+import { UsersGuard } from 'src/users/users.guard';
 
+@UseGuards(UsersGuard)
 @Controller('profiles')
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
@@ -25,7 +28,7 @@ export class ProfilesController {
     @Body() createProfileDto: CreateProfileDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.profilesService.create(createProfileDto,file);
+    return this.profilesService.create(createProfileDto, file);
   }
 
   @Get()
@@ -40,8 +43,12 @@ export class ProfilesController {
 
   @Patch(':id')
   @UseInterceptors(FileInterceptor('avatar', multerConfig))
-  update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto,@UploadedFile() file: Express.Multer.File) {
-    return this.profilesService.update(+id, updateProfileDto,file);
+  update(
+    @Param('id') id: string,
+    @Body() updateProfileDto: UpdateProfileDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.profilesService.update(+id, updateProfileDto, file);
   }
 
   @Delete(':id')
