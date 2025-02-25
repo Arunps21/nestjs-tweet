@@ -18,7 +18,7 @@ import { JwtService } from '@nestjs/jwt';
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService
   ) {}
   public async userReg(createUserDto: CreateUserDto) {
     const saltRounds: number = 10;
@@ -51,8 +51,7 @@ export class UsersService {
       throw new UnauthorizedException('Invalid credentials');
     }
     const payload = { userId: user.id, email: user.email };
-    const token = this.jwtService.sign(payload);
-    console.log(`Token`, token);
+    const token = this.jwtService.sign(payload)
     return {
       message: `Successfully logged In`,
       statusCode: HttpStatus.OK,

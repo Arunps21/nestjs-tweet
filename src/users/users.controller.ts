@@ -8,11 +8,13 @@ import {
   Delete,
   Query,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
+import { UsersGuard } from './users.guard';
 
 @Controller('users')
 export class UsersController {
@@ -28,11 +30,16 @@ export class UsersController {
     return this.usersService.userLogin(userLoginDto);
   }
 
+  @UseGuards(UsersGuard)
   @Get()
-  findAll(@Query('skip',ParseIntPipe) skip: number, @Query('limit',ParseIntPipe) limit: number) {
+  findAll(
+    @Query('skip', ParseIntPipe) skip: number,
+    @Query('limit', ParseIntPipe) limit: number,
+  ) {
     return this.usersService.findAll(skip, limit);
   }
 
+  @UseGuards(UsersGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
