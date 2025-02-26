@@ -3,6 +3,7 @@ import { TweetsService } from './tweets.service';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { UpdateTweetDto } from './dto/update-tweet.dto';
 import { UsersGuard } from 'src/users/users.guard';
+import { GetUserId } from 'src/decorator/user.decorator';
 
 @UseGuards(UsersGuard)
 @Controller('tweets')
@@ -10,8 +11,8 @@ export class TweetsController {
   constructor(private readonly tweetsService: TweetsService) {}
 
   @Post()
-  create(@Body() createTweetDto: CreateTweetDto) {
-    return this.tweetsService.create(createTweetDto);
+  create(@Body() createTweetDto: CreateTweetDto, @GetUserId() id : number) {
+    return this.tweetsService.create(createTweetDto,id);
   }
 
   @Get()
@@ -19,9 +20,9 @@ export class TweetsController {
     return this.tweetsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tweetsService.findOne(+id);
+  @Get('getTweet')
+  findOne(@GetUserId() id: number) {
+    return this.tweetsService.findOne(id);
   }
 
   @Patch(':id')
@@ -29,8 +30,8 @@ export class TweetsController {
     return this.tweetsService.update(+id, updateTweetDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(`:id`)
+  remove(@Param('id') id: number) {
     return this.tweetsService.remove(+id);
   }
 }

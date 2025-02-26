@@ -14,8 +14,8 @@ export class LikesService {
     private readonly tweetService: TweetsService,
     private readonly userService: UsersService,
   ) {}
-  public async create(createLikeDto: CreateLikeDto) {
-    const { tweet_id, user_id } = createLikeDto;
+  public async create(createLikeDto: CreateLikeDto , user_id : number) {
+    const { tweet_id } = createLikeDto;
     await this.tweetService.findOne(tweet_id);
     await this.userService.findOne(user_id);
     const like = await this.likeRepository.findOneBy({ user_id });

@@ -16,8 +16,9 @@ export class ProfilesService {
   public async create(
     createProfileDto: CreateProfileDto,
     file: Express.Multer.File,
+    user_id: number,
   ) {
-    const { user_id, avatar, bio } = createProfileDto;
+    const { avatar, bio } = createProfileDto;
     await this.userService.findOne(user_id);
     const extProfile = await this.profilesRepository.findOneBy({ user_id });
     if (extProfile) {
@@ -37,7 +38,9 @@ export class ProfilesService {
   }
 
   public async findOne(id: number) {
-    const profile = await this.profilesRepository.findOne({ where: { id } });
+    const profile = await this.profilesRepository.findOne({
+      where: { user_id: id },
+    });
     if (!profile) {
       throw new ConflictException(`Profile with id ${id} not found`);
     }
@@ -49,7 +52,9 @@ export class ProfilesService {
     updateProfileDto: UpdateProfileDto,
     file?: Express.Multer.File,
   ) {
-    const profile = await this.profilesRepository.findOne({ where: { id } });
+    const profile = await this.profilesRepository.findOne({
+      where: { user_id: id },
+    });
     if (!profile) {
       throw new ConflictException(`Profile with id ${id} not found`);
     }
@@ -60,11 +65,13 @@ export class ProfilesService {
     };
 
     await this.profilesRepository.update(id, updatedData);
-    return await this.profilesRepository.findOne({ where: { id } });
+    return await this.profilesRepository.findOne({ where: { user_id: id } });
   }
 
   public async remove(id: number) {
-    const profile = await this.profilesRepository.findOne({ where: { id } });
+    const profile = await this.profilesRepository.findOne({
+      where: { user_id: id },
+    });
     if (!profile) {
       throw new ConflictException(`Profile with id ${id} not found`);
     }

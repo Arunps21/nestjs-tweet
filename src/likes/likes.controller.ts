@@ -12,6 +12,7 @@ import { LikesService } from './likes.service';
 import { CreateLikeDto } from './dto/create-like.dto';
 import { UpdateLikeDto } from './dto/update-like.dto';
 import { UsersGuard } from 'src/users/users.guard';
+import { GetUserId } from 'src/decorator/user.decorator';
 
 @UseGuards(UsersGuard)
 @Controller('likes')
@@ -19,8 +20,8 @@ export class LikesController {
   constructor(private readonly likesService: LikesService) {}
 
   @Post()
-  create(@Body() createLikeDto: CreateLikeDto) {
-    return this.likesService.create(createLikeDto);
+  create(@Body() createLikeDto: CreateLikeDto, @GetUserId() id:number) {
+    return this.likesService.create(createLikeDto,id);
   }
 
   @Get()

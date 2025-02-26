@@ -12,12 +12,12 @@ export class TweetsService {
     @InjectRepository(Tweet) private tweetRepository: Repository<Tweet>,
     private readonly usersService: UsersService,
   ) {}
-  public async create(createTweetDto: CreateTweetDto) {
-    const { user_id, content } = createTweetDto;
-    await this.usersService.findOne(user_id);
+  public async create(createTweetDto: CreateTweetDto, id: number) {
+    const { content } = createTweetDto;
+    await this.usersService.findOne(id);
     const tweet = this.tweetRepository.create({
       content,
-      user_id,
+      user_id: id,
     });
     return await this.tweetRepository.save(tweet);
   }
@@ -27,7 +27,11 @@ export class TweetsService {
   }
 
   public async findOne(id: number) {
-    const tweet = await this.tweetRepository.findOne({ where: { id } });
+    const tweet = await this.tweetRepository.find({
+      where: {
+        user_id: id,
+      },
+    });
     if (!tweet) {
       throw new ConflictException(`Tweet with id ${id} not found`);
     }
@@ -39,11 +43,14 @@ export class TweetsService {
     if (!tweet) {
       throw new ConflictException(`Tweet with id ${id} not found`);
     }
-    const updateTweet = await this.tweetRepository.update(id, updateTweetDto);
+    const updateTweet = await this.tweetRepository.update(
+     id,
+      updateTweetDto,
+    );
     if (!updateTweet.affected) {
       throw new ConflictException(`Tweet with id ${id} not updated`);
     }
-    return tweet;
+    return this.tweetRepository.findOne({ where: { user_id: id } });
   }
 
   public async remove(id: number) {

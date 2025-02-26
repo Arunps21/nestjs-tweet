@@ -16,6 +16,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/config/multer.config';
 import { UsersGuard } from 'src/users/users.guard';
+import { GetUserId } from 'src/decorator/user.decorator';
 
 @UseGuards(UsersGuard)
 @Controller('profiles')
@@ -27,8 +28,9 @@ export class ProfilesController {
   create(
     @Body() createProfileDto: CreateProfileDto,
     @UploadedFile() file: Express.Multer.File,
+    @GetUserId() user: number,
   ) {
-    return this.profilesService.create(createProfileDto, file);
+    return this.profilesService.create(createProfileDto, file, user);
   }
 
   @Get()
@@ -36,23 +38,23 @@ export class ProfilesController {
     return this.profilesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get('getUser')
+  findOne(@GetUserId() id: number) {
     return this.profilesService.findOne(+id);
   }
 
-  @Patch(':id')
+  @Patch()
   @UseInterceptors(FileInterceptor('avatar', multerConfig))
   update(
-    @Param('id') id: string,
+    @GetUserId() id: number,
     @Body() updateProfileDto: UpdateProfileDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.profilesService.update(+id, updateProfileDto, file);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete()
+  remove(@GetUserId() id: number) {
     return this.profilesService.remove(+id);
   }
 }

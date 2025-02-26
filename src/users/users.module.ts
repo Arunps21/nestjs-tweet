@@ -18,6 +18,7 @@ import { UsersGuard } from './users.guard';
         signOptions: {
           expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '60s',
         },
+        
       }),
     }),
   ],

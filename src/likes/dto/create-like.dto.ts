@@ -1,10 +1,7 @@
-import { IsInt, IsNotEmpty } from "class-validator";
+import { IsInt, IsNotEmpty } from 'class-validator';
 
 export class CreateLikeDto {
-    @IsInt()
-    @IsNotEmpty()
-    tweet_id: number;
-  
-    @IsInt()
-    user_id: number;
-  }
+  @IsInt()
+  @IsNotEmpty()
+  tweet_id: number;
+}
