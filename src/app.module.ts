@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { typeOrmConfig } from './config/typeOrm.config';
 import { JwtModule } from '@nestjs/jwt';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { JwtModule } from '@nestjs/jwt';
     ProfilesModule,
     TweetsModule,
     LikesModule,
+    RolesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
