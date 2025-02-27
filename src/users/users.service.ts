@@ -23,7 +23,7 @@ export class UsersService {
   ) {}
   public async userReg(createUserDto: CreateUserDto) {
     const saltRounds: number = 10;
-    const { username, email, password } = createUserDto;
+    const { username, email, password, role_id } = createUserDto;
     const extUser = await this.usersRepository.findOne({
       where: [{ username }, { email }],
     });
@@ -35,6 +35,7 @@ export class UsersService {
         username,
         email,
         password: hashedPassword,
+        role_id
       });
       await this.usersRepository.save(newUser);
       return newUser;
@@ -51,7 +52,9 @@ export class UsersService {
     if (!isMatch) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const payload = { userId: user.id, email: user.email };
+    const payload = { userId: user.id, email: user.email , roleId : user.role };
+
+    console.log(user.role.role);
     const token = this.jwtService.sign(payload);
     return {
       message: `Successfully logged In`,

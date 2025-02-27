@@ -31,6 +31,12 @@ export class RolesService {
   }
 
   async update(role: string, updateRoleDto: UpdateRoleDto) {
+    const extRole = await this.roleRepository.findOne({
+      where: { role: ILike(role) },
+    });
+    if (!extRole) {
+      throw new ConflictException('Role does not exist');
+    }
     await this.roleRepository.update(role, updateRoleDto);
     return {
       message: 'Role updated successfully',

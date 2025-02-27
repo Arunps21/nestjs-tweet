@@ -30,8 +30,8 @@ export class User {
   @Column()
   password: string;
 
-  @ManyToOne(() => Role, (role) => role.users)
-  @JoinColumn() 
+  @ManyToOne(() => Role, (role) => role.users,{eager: true})
+  @JoinColumn({ name: 'role_id' })
   role: Role;
 
   @CreateDateColumn({ type: 'timestamp' })
