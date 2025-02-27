@@ -13,8 +13,9 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
-import { UsersGuard } from './users.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { RolesGuard } from 'src/auth/guards/role.guard';
+import { Roles } from 'src/decorator/rolesdecorator';
 
 @Controller('users')
 export class UsersController {
@@ -25,12 +26,11 @@ export class UsersController {
     return this.usersService.userReg(createUserDto);
   }
 
-  @Post(`userLogin`)
-  userLogin(@Body() userLoginDto: LoginUserDto) {
-    return this.usersService.userLogin(userLoginDto);
-  }
+  // @Post(`userLogin`)
+  // userLogin(@Body() userLoginDto: LoginUserDto) {
+  //   return this.usersService.userLogin(userLoginDto);
+  // }
 
-  @UseGuards(UsersGuard)
   @Get()
   findAll(
     @Query('skip', ParseIntPipe) skip: number,
@@ -39,20 +39,18 @@ export class UsersController {
     return this.usersService.findAll(skip, limit);
   }
 
-  @UseGuards(UsersGuard)
-  
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
 
-  @UseGuards(UsersGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
   }
 
-  @UseGuards(UsersGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);

@@ -15,10 +15,8 @@ import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/config/multer.config';
-import { UsersGuard } from 'src/users/users.guard';
 import { GetUserId } from 'src/decorator/user.decorator';
 
-@UseGuards(UsersGuard)
 @Controller('profiles')
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}

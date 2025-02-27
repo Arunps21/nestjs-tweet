@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 // import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersGuard } from './users.guard';
 import jwtConfig from 'src/config/jwt.config';
 
 @Module({
@@ -25,7 +24,7 @@ import jwtConfig from 'src/config/jwt.config';
     JwtModule.registerAsync(jwtConfig.asProvider()),
   ],
   controllers: [UsersController],
-  providers: [UsersService, UsersGuard],
-  exports: [UsersService, UsersGuard, JwtModule],
+  providers: [UsersService],
+  exports: [UsersService, JwtModule],
 })
 export class UsersModule {}

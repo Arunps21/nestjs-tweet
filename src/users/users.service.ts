@@ -35,34 +35,32 @@ export class UsersService {
         username,
         email,
         password: hashedPassword,
-        role_id
+        role_id,
       });
       await this.usersRepository.save(newUser);
       return newUser;
     }
   }
 
-  public async userLogin(userLoginDto: LoginUserDto) {
-    const { email, password } = userLoginDto;
-    const user = await this.usersRepository.findOne({ where: { email } });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    const payload = { userId: user.id, email: user.email , roleId : user.role };
-
-    console.log(user.role.role);
-    const token = this.jwtService.sign(payload);
-    return {
-      message: `Successfully logged In`,
-      statusCode: HttpStatus.OK,
-      token,
-      user,
-    };
-  }
+  // public async userLogin(userLoginDto: LoginUserDto) {
+  //   const { email, password } = userLoginDto;
+  //   const user = await this.usersRepository.findOne({ where: { email } });
+  //   if (!user) {
+  //     throw new NotFoundException('User not found');
+  //   }
+  //   const isMatch = await bcrypt.compare(password, user.password);
+  //   if (!isMatch) {
+  //     throw new UnauthorizedException('Invalid credentials');
+  //   }
+  //   const payload = { userId: user.id, email: user.email , roleId : user.role };
+  //   const token = this.jwtService.sign(payload);
+  //   return {
+  //     message: `Successfully logged In`,
+  //     statusCode: HttpStatus.OK,
+  //     token,
+  //     user,
+  //   };
+  // }
 
   findAll(skip: number, limit: number) {
     return this.usersRepository.find({
@@ -83,6 +81,14 @@ export class UsersService {
     const user = await this.findOne(id);
     if (!user) {
       throw new NotFoundException('User not found');
+    }
+    if (updateUserDto.password) {
+      const saltRounds: number = 10;
+      const hashedPassword = await bcrypt.hash(
+        updateUserDto.password,
+        saltRounds,
+      );
+      updateUserDto.password = hashedPassword;
     }
     await this.usersRepository.update(id, updateUserDto);
     return await this.findOne(id);
