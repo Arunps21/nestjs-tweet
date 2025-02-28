@@ -16,6 +16,10 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/config/multer.config';
 import { GetUserId } from 'src/decorator/user.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { RolesGuard } from 'src/auth/guards/role.guard';
+import { Role } from 'src/roles/entities/role.entity';
+import { Roles } from 'src/decorator/rolesdecorator';
 
 @Controller('profiles')
 export class ProfilesController {
@@ -23,6 +27,7 @@ export class ProfilesController {
 
   @Post()
   @UseInterceptors(FileInterceptor('avatar', multerConfig))
+  @UseGuards(JwtAuthGuard)
   create(
     @Body() createProfileDto: CreateProfileDto,
     @UploadedFile() file: Express.Multer.File,
@@ -36,11 +41,13 @@ export class ProfilesController {
     return this.profilesService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('getUser')
   findOne(@GetUserId() id: number) {
     return this.profilesService.findOne(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch()
   @UseInterceptors(FileInterceptor('avatar', multerConfig))
   update(
@@ -51,6 +58,7 @@ export class ProfilesController {
     return this.profilesService.update(+id, updateProfileDto, file);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete()
   remove(@GetUserId() id: number) {
     return this.profilesService.remove(+id);
